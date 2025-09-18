@@ -46,6 +46,11 @@
         .message-fade-in {
             animation: fadeIn 0.3s ease-out forwards;
         }
+
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
     </style>
 </head>
 
@@ -63,10 +68,13 @@
                 </svg>
             </div>
             <h1 class="text-4xl font-bold text-slate-800 mb-2">Welcome to Chat!</h1>
-            <p class="text-slate-500 mb-8">Enter your name to join the conversation.</p>
+            <p class="text-slate-500 mb-8">Enter your name and the secret code to join.</p>
             <form id="name-form" class="w-full max-w-sm flex flex-col items-center">
                 <input type="text" id="username-input" placeholder="Your name..."
                     class="w-full px-4 py-3 border border-slate-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
+                    required>
+                <input type="password" id="password-input" placeholder="Secret code..."
+                    class="w-full mt-3 px-4 py-3 border border-slate-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
                     required>
                 <button type="submit"
                     class="mt-4 w-full bg-indigo-600 text-white font-semibold py-3 px-4 rounded-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-300 ease-in-out shadow-lg">
@@ -133,12 +141,12 @@
         // Import functions from the Firebase SDKs
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, collection, addDoc, query, onSnapshot, serverTimestamp, setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, query, onSnapshot, serverTimestamp, setLogLevel, doc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
         import { orderBy as firestoreOrderBy } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
 
         // --- Firebase Configuration ---
-
+        
         const firebaseConfig = {
             apiKey: "AIzaSyAFtxg7p6UfV0_Cs2kADnAcZlVovy5eZKM",
             authDomain: "chat-application-cbd8b.firebaseapp.com",
@@ -167,7 +175,7 @@
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
-        // setLogLevel('debug'); // Uncomment for detailed logs
+         
 
         // App state
         let currentUser = null;
@@ -256,25 +264,58 @@
                 messageInput.value = '';
             } catch (error) {
                 console.error("Error sending message: ", error);
-                alert("Failed to send message. Please check your connection.");
+                 
             }
         }
 
         // --- Event Listeners ---
 
         // Handle username submission
-        nameForm.addEventListener('submit', (e) => {
+        nameForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             const username = usernameInput.value.trim();
-            if (username && currentUser) {
-                currentUsername = username;
-                displayUsername.textContent = currentUsername;
-                welcomeScreen.classList.add('hidden');
-                chatScreen.classList.remove('hidden');
-                chatScreen.classList.add('flex');
-                listenForMessages();
-            } else if (!currentUser) {
-                errorMessage.textContent = "Still connecting... Please try again in a moment.";
+            const password = document.getElementById('password-input').value;
+            const joinButton = e.target.querySelector('button');
+
+            if (!username || !password) {
+                errorMessage.textContent = "Please enter your name and the secret code.";
+                return;
+            }
+            if (!currentUser) {
+                errorMessage.textContent = "Connecting... Please try again in a moment.";
+                return;
+            }
+
+            joinButton.disabled = true;
+            joinButton.textContent = 'Verifying...';
+            errorMessage.textContent = '';
+
+            try {
+                const secretDocRef = doc(db, `artifacts/${appId}/public/data/config`, 'secret');
+                const docSnap = await getDoc(secretDocRef);
+
+                if (docSnap.exists()) {
+                    const correctCode = docSnap.data().code;
+                    if (password === correctCode) {
+                        currentUsername = username;
+                        displayUsername.textContent = currentUsername;
+                        welcomeScreen.classList.add('hidden');
+                        chatScreen.classList.remove('hidden');
+                        chatScreen.classList.add('flex');
+                        listenForMessages();
+                    } else {
+                        errorMessage.textContent = "Incorrect secret code. Please try again.";
+                    }
+                } else {
+                    console.error("Secret code document does not exist in Firestore.");
+                    errorMessage.textContent = "Chat room is not configured correctly.";
+                }
+            } catch (error) {
+                console.error("Error verifying secret code:", error);
+                errorMessage.textContent = "Could not verify secret code. Try again.";
+            } finally {
+                joinButton.disabled = false;
+                joinButton.textContent = 'Join Chat';
             }
         });
 
@@ -291,3 +332,4 @@
 </body>
 
 </html>
+```
