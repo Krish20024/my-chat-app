@@ -6,11 +6,42 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Real-time Chat App</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --bg-dark: #0f172a;
+            /* slate-900 */
+            --bg-panel: rgba(30, 41, 59, 0.7);
+            /* slate-800 with alpha */
+            --border-color: #334155;
+            /* slate-700 */
+            --text-primary: #f1f5f9;
+            /* slate-100 */
+            --text-secondary: #94a3b8;
+            /* slate-400 */
+            --accent-color: #06b6d4;
+            /* cyan-500 */
+            --accent-hover: #0891b2;
+            /* cyan-600 */
+            --glow-color: rgba(6, 182, 212, 0.4);
+        }
+
         body {
-            font-family: 'Inter', sans-serif;
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            font-family: 'IBM Plex Mono', monospace;
+            background-color: var(--bg-dark);
+            background-image:
+                linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+
+        #app-container {
+            background: var(--bg-panel);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--border-color);
         }
 
         #chat-messages::-webkit-scrollbar,
@@ -20,19 +51,18 @@
 
         #chat-messages::-webkit-scrollbar-track,
         #online-users::-webkit-scrollbar-track {
-            background: #f1f5f9;
-            border-radius: 4px;
+            background: transparent;
         }
 
         #chat-messages::-webkit-scrollbar-thumb,
         #online-users::-webkit-scrollbar-thumb {
-            background: #cbd5e1;
+            background: var(--border-color);
             border-radius: 4px;
         }
 
         #chat-messages::-webkit-scrollbar-thumb:hover,
         #online-users::-webkit-scrollbar-thumb:hover {
-            background: #94a3b8;
+            background: var(--text-secondary);
         }
 
         @keyframes fadeIn {
@@ -52,7 +82,7 @@
         }
 
         button:disabled {
-            opacity: 0.6;
+            opacity: 0.5;
             cursor: not-allowed;
         }
 
@@ -69,62 +99,85 @@
         .delete-btn:hover {
             opacity: 1;
         }
+
+        .tech-input {
+            background-color: rgba(15, 23, 42, 0.5);
+            /* slate-900/50 */
+            border-color: var(--border-color);
+            color: var(--text-primary);
+            transition: all 0.2s ease-in-out;
+        }
+
+        .tech-input:focus {
+            outline: none;
+            border-color: var(--accent-color);
+            box-shadow: 0 0 15px var(--glow-color);
+        }
+
+        .tech-button {
+            background-color: var(--accent-color);
+            transition: all 0.2s ease-in-out;
+        }
+
+        .tech-button:hover {
+            background-color: var(--accent-hover);
+            box-shadow: 0 0 20px var(--glow-color);
+        }
     </style>
 </head>
 
-<body class="flex flex-col items-center justify-center min-h-screen p-4">
+<body class="flex flex-col items-center justify-center min-h-screen p-4 text-slate-200">
 
-    <div id="app-container"
-        class="w-full max-w-4xl h-[95vh] max-h-[900px] bg-white rounded-2xl shadow-2xl flex p-4 md:p-6">
+    <div id="app-container" class="w-full max-w-4xl h-[95vh] max-h-[900px] rounded-2xl shadow-2xl flex p-4 md:p-6">
 
         <!-- Welcome / Username Screen -->
         <div id="welcome-screen" class="flex flex-col items-center justify-center w-full text-center">
-            <div class="bg-indigo-100 text-indigo-600 rounded-full p-4 mb-6">
+            <div class="border-2 border-cyan-500 rounded-full p-4 mb-6 shadow-lg"
+                style="box-shadow: 0 0 20px var(--glow-color);">
                 <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none"
-                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                    class="text-cyan-500">
                     <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
                 </svg>
             </div>
-            <h1 class="text-4xl font-bold text-slate-800 mb-2">Welcome to Chat!</h1>
-            <p class="text-slate-500 mb-8">Enter your name and the secret code to join.</p>
+            <h1 class="text-4xl font-bold text-slate-100 mb-2">ACCESS TERMINAL</h1>
+            <p class="text-slate-400 mb-8">Provide credentials to enter the network.</p>
             <form id="name-form" class="w-full max-w-sm flex flex-col items-center">
-                <input type="text" id="username-input" placeholder="Your name..."
-                    class="w-full px-4 py-3 border border-slate-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
-                    required>
-                <input type="password" id="password-input" placeholder="Secret code..."
-                    class="w-full mt-3 px-4 py-3 border border-slate-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
-                    required>
+                <input type="text" id="username-input" placeholder="Enter callsign..."
+                    class="w-full px-4 py-3 border rounded-lg shadow-sm tech-input" required>
+                <input type="password" id="password-input" placeholder="Access code..."
+                    class="w-full mt-3 px-4 py-3 border rounded-lg shadow-sm tech-input" required>
                 <button type="submit"
-                    class="mt-4 w-full bg-indigo-600 text-white font-semibold py-3 px-4 rounded-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-300 ease-in-out shadow-lg">
-                    Join Chat
+                    class="mt-4 w-full text-white font-semibold py-3 px-4 rounded-lg focus:outline-none shadow-lg tech-button">
+                    Establish Connection
                 </button>
             </form>
-            <p id="error-message" class="text-red-500 mt-4 h-6"></p>
+            <p id="error-message" class="text-red-400 mt-4 h-6"></p>
         </div>
 
-        
+         
         <div id="chat-screen" class="hidden w-full flex h-full">
              
-            <aside class="w-1/4 max-w-xs border-r border-slate-200 pr-4 flex flex-col">
-                <h2 class="text-lg font-bold text-slate-800 mb-4 flex items-center">
-                    <span class="relative flex h-3 w-3 mr-2">
+            <aside class="w-1/4 max-w-xs border-r border-slate-700 pr-4 flex flex-col">
+                <h2 class="text-lg font-bold text-slate-200 mb-4 flex items-center">
+                    <span class="relative flex h-3 w-3 mr-3">
                         <span
-                            class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-                        <span class="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
+                            class="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-3 w-3 bg-cyan-500"></span>
                     </span>
-                    Online Users
+                    Active Connections
                 </h2>
-                <div id="online-users" class="flex-1 overflow-y-auto">
+                <div id="online-users" class="flex-1 overflow-y-auto pr-2">
                      
                 </div>
             </aside>
 
-             
+            
             <div class="flex-1 flex flex-col pl-4">
-                <header class="border-b border-slate-200 pb-4 mb-4">
+                <header class="border-b border-slate-700 pb-4 mb-4">
                     <div class="flex items-center justify-between">
                         <div class="flex items-center space-x-3">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="text-indigo-500" width="28" height="28"
+                            <svg xmlns="http://www.w3.org/2000/svg" class="text-cyan-500" width="28" height="28"
                                 viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                                 stroke-linecap="round" stroke-linejoin="round">
                                 <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
@@ -132,28 +185,27 @@
                                 <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
                                 <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
                             </svg>
-                            <h1 class="text-2xl font-bold text-slate-800">Global Chat Room</h1>
+                            <h1 class="text-2xl font-bold text-slate-100">Encrypted Channel</h1>
                         </div>
                         <div class="flex items-center space-x-2">
-                            <span class="text-sm text-slate-500">Joined as:</span>
-                            <span id="display-username" class="font-semibold text-indigo-600"></span>
+                            <span class="text-sm text-slate-400">Callsign:</span>
+                            <span id="display-username" class="font-semibold text-cyan-400"></span>
                         </div>
                     </div>
                 </header>
 
-                <main id="chat-messages" class="flex-1 overflow-y-auto mb-2 p-4 bg-slate-50 rounded-lg space-y-4">
-                    
+                <main id="chat-messages" class="flex-1 overflow-y-auto mb-2 p-2 rounded-lg space-y-4">
+                     
                 </main>
 
-                <div id="typing-indicator" class="h-6 text-sm text-slate-500 italic px-4"></div>
+                <div id="typing-indicator" class="h-6 text-sm text-cyan-400 italic px-4"></div>
 
                 <footer class="mt-auto">
                     <form id="message-form" class="flex items-center space-x-4">
-                        <input type="text" id="message-input" placeholder="Type a message..." autocomplete="off"
-                            class="flex-1 px-4 py-3 bg-slate-100 border-transparent rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
-                            required>
+                        <input type="text" id="message-input" placeholder="Transmit message..." autocomplete="off"
+                            class="flex-1 px-4 py-3 border-transparent rounded-lg tech-input" required>
                         <button type="submit"
-                            class="bg-indigo-600 text-white p-3 rounded-full hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-300 ease-in-out shadow-md">
+                            class="text-white p-3 rounded-full focus:outline-none shadow-md tech-button">
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
                                 fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                                 stroke-linejoin="round" class="feather feather-send -rotate-12">
@@ -169,13 +221,13 @@
 
     <footer class="mt-4 text-sm text-slate-500 text-center">
         <p>Created with ❤️ by <a href="https://github.com/your-username" target="_blank"
-                class="font-semibold text-indigo-600 hover:underline">Krish</a></p>
+                class="font-semibold text-cyan-500 hover:underline">Krish</a></p>
     </footer>
 
     <audio id="notification-sound" src="https://freesound.org/data/previews/253/253887_3904323-lq.mp3"
         preload="auto"></audio>
 
-    <!-- Firebase Libraries -->
+    
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
@@ -183,7 +235,7 @@
         import { orderBy as firestoreOrderBy } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
         import { getDatabase, ref, onValue, set, onDisconnect } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-database.js";
 
-        // --- Firebase Configuration ---
+         
         const firebaseConfig = {
             apiKey: "AIzaSyAFtxg7p6UfV0_Cs2kADnAcZlVovy5eZKM",
             authDomain: "chat-application-cbd8b.firebaseapp.com",
@@ -193,15 +245,15 @@
             appId: "1:403898227611:web:0550f65a815664a8479f3e",
             measurementId: "G-63MC1570K2"
         };
+
         // ---------------------------------------------------------
         const appId = firebaseConfig.appId || 'default-app-id';
 
-      
         if (!firebaseConfig || !firebaseConfig.apiKey || firebaseConfig.apiKey === "YOUR_API_KEY") {
             document.getElementById('welcome-screen').innerHTML = `
-                <div class="text-center p-4 bg-red-100 text-red-700 rounded-lg">
-                    <h2 class="font-bold text-xl mb-2">Configuration Missing!</h2>
-                    <p>The Firebase configuration could not be loaded. Please paste it into the index.html file.</p>
+                <div class="text-center p-4 bg-red-900/50 border border-red-500 text-red-300 rounded-lg">
+                    <h2 class="font-bold text-xl mb-2">Configuration Error!</h2>
+                    <p>SYSTEM OFFLINE: Firebase configuration not found. Please update index.html.</p>
                 </div>`;
             throw new Error("Firebase config is not available.");
         }
@@ -210,7 +262,6 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
         const rtdb = getDatabase(app);
-        // setLogLevel('debug');
 
         let currentUser = null;
         let currentUsername = null;
@@ -244,7 +295,7 @@
                 currentUser = userCredential.user;
             } catch (error) {
                 console.error("Authentication failed:", error);
-                errorMessage.textContent = "Could not connect to the chat service.";
+                errorMessage.textContent = "Connection to auth server failed.";
             }
         }
 
@@ -268,7 +319,7 @@
                 });
 
                 if (snapshot.docChanges().some(change => change.type === 'added') && document.hidden) {
-                    notificationSound.play().catch(e => console.log("Playback prevented"));
+                    notificationSound.play().catch(e => console.log("Playback prevented by browser."));
                 }
 
                 chatMessages.scrollTop = chatMessages.scrollHeight;
@@ -284,12 +335,12 @@
 
             messageWrapper.innerHTML = `
                 <div class="flex flex-col message-bubble ${isMyMessage ? 'items-end' : 'items-start'}">
-                    ${!isMyMessage ? `<div class="text-xs text-slate-500 ml-2 mb-1 font-medium">${message.username || 'Anonymous'}</div>` : ''}
-                    <div class="relative max-w-xs md:max-w-md px-4 py-3 rounded-2xl shadow-sm ${isMyMessage ? 'bg-gradient-to-br from-indigo-500 to-violet-600 text-white rounded-br-none' : 'bg-white border border-slate-200 text-slate-800 rounded-bl-none'}">
-                        <p class="break-words">${formatMessageText(message.text)}</p>
-                        ${isMyMessage ? `<span class="delete-btn absolute top-1/2 -left-6 -translate-y-1/2" data-id="${id}" title="Delete message"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-slate-400 hover:text-red-500"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg></span>` : ''}
+                    ${!isMyMessage ? `<div class="text-xs text-slate-400 ml-2 mb-1 font-medium">${message.username || 'unknown_node'}</div>` : ''}
+                    <div class="relative max-w-xs md:max-w-md px-4 py-3 rounded-2xl shadow-lg ${isMyMessage ? 'bg-gradient-to-br from-cyan-500 to-blue-600 text-white rounded-br-none' : 'bg-slate-700 text-slate-200 rounded-bl-none'}">
+                        <p class="break-words">${formatMessageText(message.text, isMyMessage)}</p>
+                        ${isMyMessage ? `<span class="delete-btn absolute top-1/2 -left-6 -translate-y-1/2" data-id="${id}" title="Delete message"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-slate-500 hover:text-red-400"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg></span>` : ''}
                     </div>
-                    <div class="text-xs text-slate-400 mt-1 px-2">${formatTimestamp(timestamp)}</div>
+                    <div class="text-xs text-slate-500 mt-1 px-2">${formatTimestamp(timestamp)}</div>
                 </div>
             `;
 
@@ -303,9 +354,10 @@
             return messageWrapper;
         }
 
-        function formatMessageText(text) {
+        function formatMessageText(text, isMyMessage) {
             const urlRegex = /(https?:\/\/[^\s]+)/g;
-            return text.replace(urlRegex, '<a href="$1" target="_blank" rel="noopener noreferrer" class="text-blue-300 underline hover:text-blue-200">$1</a>');
+            const linkClass = isMyMessage ? "text-blue-200 underline hover:text-blue-100" : "text-cyan-400 underline hover:text-cyan-300";
+            return text.replace(urlRegex, `<a href="$1" target="_blank" rel="noopener noreferrer" class="${linkClass}">$1</a>`);
         }
 
         function formatTimestamp(date) {
@@ -314,7 +366,7 @@
             const diffDays = Math.floor(diff / (1000 * 3600 * 24));
 
             if (diffDays === 0) return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-            if (diffDays === 1) return `Yesterday at ${date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
+            if (diffDays === 1) return `Yesterday // ${date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
             return date.toLocaleDateString();
         }
 
@@ -350,7 +402,7 @@
             onValue(connectedRef, (snap) => {
                 if (snap.val() === true) {
                     const con = set(myConnectionRef, { username: currentUsername, online: true });
-                    onDisconnect(myConnectionRef).remove();
+                    onDisconnect(myConnectioneRef).remove();
                 }
             });
         }
@@ -362,8 +414,8 @@
                 onlineUsersContainer.innerHTML = '';
                 Object.values(users).forEach(user => {
                     const p = document.createElement('p');
-                    p.className = 'text-slate-700 py-1';
-                    p.textContent = user.username;
+                    p.className = 'text-slate-300 py-1 text-sm truncate';
+                    p.textContent = `> ${user.username}`;
                     onlineUsersContainer.appendChild(p);
                 });
             });
@@ -392,9 +444,9 @@
                 if (typers.length === 0) {
                     typingIndicator.textContent = '';
                 } else if (typers.length === 1) {
-                    typingIndicator.textContent = `${typers[0]} is typing...`;
+                    typingIndicator.textContent = `${typers[0]} is transmitting...`;
                 } else {
-                    typingIndicator.textContent = `${typers.join(', ')} are typing...`;
+                    typingIndicator.textContent = `Multiple nodes are transmitting...`;
                 }
             });
         }
@@ -405,16 +457,16 @@
             const password = document.getElementById('password-input').value;
             const joinButton = e.target.querySelector('button');
             if (!username || !password) {
-                errorMessage.textContent = "Please enter your name and the secret code.";
+                errorMessage.textContent = "Credentials required.";
                 return;
             }
             if (!currentUser) {
-                errorMessage.textContent = "Connecting... Please try again in a moment.";
+                errorMessage.textContent = "Establishing connection... Please retry.";
                 return;
             }
 
             joinButton.disabled = true;
-            joinButton.textContent = 'Verifying...';
+            joinButton.textContent = 'Authenticating...';
             errorMessage.textContent = '';
 
             try {
@@ -425,16 +477,17 @@
                     displayUsername.textContent = currentUsername;
                     welcomeScreen.classList.add('hidden');
                     chatScreen.classList.remove('hidden');
+                    chatScreen.classList.add('flex');
                     onUserLogin();
                 } else {
-                    errorMessage.textContent = "Incorrect secret code. Please try again.";
+                    errorMessage.textContent = "Access denied: Invalid credentials.";
                 }
             } catch (error) {
                 console.error("Error verifying secret code:", error);
-                errorMessage.textContent = "Could not verify secret code. Try again.";
+                errorMessage.textContent = "Authentication server error.";
             } finally {
                 joinButton.disabled = false;
-                joinButton.textContent = 'Join Chat';
+                joinButton.textContent = 'Establish Connection';
             }
         });
 
