@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,32 +11,40 @@
         body {
             font-family: 'Inter', sans-serif;
         }
+
         #chat-messages::-webkit-scrollbar {
             width: 8px;
         }
+
         #chat-messages::-webkit-scrollbar-track {
             background: #f1f5f9;
         }
+
         #chat-messages::-webkit-scrollbar-thumb {
             background: #cbd5e1;
             border-radius: 4px;
         }
+
         #chat-messages::-webkit-scrollbar-thumb:hover {
             background: #94a3b8;
         }
     </style>
 </head>
+
 <body class="bg-slate-100 flex flex-col items-center justify-center min-h-screen py-6">
 
     <div id="app-container" class="w-full max-w-2xl h-[90vh] bg-white rounded-2xl shadow-2xl flex flex-col p-4 md:p-6">
-        
+
         <!-- Welcome / Username Screen -->
         <div id="welcome-screen" class="flex flex-col items-center justify-center h-full">
             <h1 class="text-4xl font-bold text-slate-800 mb-2">Welcome to Chat!</h1>
             <p class="text-slate-500 mb-8">Enter your name to start chatting.</p>
             <form id="name-form" class="w-full max-w-sm flex flex-col items-center">
-                <input type="text" id="username-input" placeholder="Your name..." class="w-full px-4 py-3 border border-slate-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition" required>
-                <button type="submit" class="mt-4 w-full bg-indigo-600 text-white font-semibold py-3 px-4 rounded-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-300 ease-in-out shadow-lg">
+                <input type="text" id="username-input" placeholder="Your name..."
+                    class="w-full px-4 py-3 border border-slate-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
+                    required>
+                <button type="submit"
+                    class="mt-4 w-full bg-indigo-600 text-white font-semibold py-3 px-4 rounded-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-300 ease-in-out shadow-lg">
                     Join Chat
                 </button>
             </form>
@@ -62,19 +71,28 @@
             <!-- Message Input Form -->
             <footer class="mt-auto">
                 <form id="message-form" class="flex items-center space-x-4">
-                    <input type="text" id="message-input" placeholder="Type a message..." autocomplete="off" class="flex-1 px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition" required>
-                    <button type="submit" class="bg-indigo-600 text-white p-3 rounded-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-300 ease-in-out shadow-md">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-send"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+                    <input type="text" id="message-input" placeholder="Type a message..." autocomplete="off"
+                        class="flex-1 px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
+                        required>
+                    <button type="submit"
+                        class="bg-indigo-600 text-white p-3 rounded-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-300 ease-in-out shadow-md">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                            class="feather feather-send">
+                            <line x1="22" y1="2" x2="11" y2="13"></line>
+                            <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                        </svg>
                     </button>
                 </form>
             </footer>
         </div>
     </div>
-    
+
     <footer class="mt-4 text-sm text-slate-500">
-        <p>Created with ❤️ by <a href="https://github.com/your-username" target="_blank" class="font-semibold text-indigo-600 hover:underline">Krish</a></p>
+        <p>Created with ❤️ by <a href="https://github.com/your-username" target="_blank"
+                class="font-semibold text-indigo-600 hover:underline">Krish</a></p>
     </footer>
-    
+
     <!-- Firebase Libraries -->
     <script type="module">
         // Import functions from the Firebase SDKs
@@ -83,14 +101,22 @@
         import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, serverTimestamp, setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         // --- Firebase Configuration ---
-        const firebaseConfig = typeof __firebase_config !== 'undefined' 
-            ? JSON.parse(__firebase_config)
-            : null;
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+         
+        const firebaseConfig = {
+            apiKey: "AIzaSyAFtxg7p6UfV0_Cs2kADnAcZlVovy5eZKM",
+            authDomain: "chat-application-cbd8b.firebaseapp.com",
+            projectId: "chat-application-cbd8b",
+            storageBucket: "chat-application-cbd8b.firebasestorage.app",
+            messagingSenderId: "403898227611",
+            appId: "1:403898227611:web:0550f65a815664a8479f3e",
+            measurementId: "G-63MC1570K2"
+        };
         // ---------------------------------------------------------
+        const appId = firebaseConfig.appId || 'default-app-id';
 
-        // Check if the config is available
-        if (!firebaseConfig) {
+
+        // Check if the config is available and not the placeholder
+        if (!firebaseConfig || firebaseConfig.apiKey === "YOUR_API_KEY") {
             document.getElementById('welcome-screen').innerHTML = `
                 <div class="text-center p-4 bg-red-100 text-red-700 rounded-lg">
                     <h2 class="font-bold text-xl mb-2">Configuration Missing!</h2>
@@ -104,7 +130,7 @@
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
-        // setLogLevel('debug'); // Uncomment for detailed logs
+         
 
         // App state
         let currentUser = null;
@@ -166,9 +192,9 @@
         function createMessageElement(message) {
             const isMyMessage = message.uid === currentUser.uid;
             const messageDiv = document.createElement('div');
-            
+
             messageDiv.className = `flex mb-4 ${isMyMessage ? 'justify-end' : 'justify-start'}`;
-            
+
             const content = `
                 <div class="max-w-xs md:max-w-md">
                     ${!isMyMessage ? `<div class="text-xs text-slate-500 ml-2 mb-1">${message.username || 'Anonymous'}</div>` : ''}
@@ -226,6 +252,5 @@
 
     </script>
 </body>
+
 </html>
-
-
