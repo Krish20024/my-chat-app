@@ -52,7 +52,6 @@
             width: 100%;
             height: 100%;
             background-color: rgba(17, 24, 39, 0.7);
-            /* Gray 900 with 70% opacity */
             z-index: -99;
         }
 
@@ -127,7 +126,6 @@
 
         .dark-input {
             background-color: #1f2937;
-            /* Gray 800 */
             border-color: var(--border-color);
             color: var(--text-primary);
             transition: all 0.2s ease-in-out;
@@ -153,6 +151,25 @@
             white-space: pre-wrap;
             word-wrap: break-word;
         }
+
+        #emoji-picker-container {
+            position: absolute;
+            bottom: 60px;
+            right: 0;
+            z-index: 10;
+        }
+
+        .avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            color: white;
+            flex-shrink: 0;
+        }
     </style>
 </head>
 
@@ -160,14 +177,13 @@
 
     <div id="video-overlay"></div>
     <video autoplay muted loop id="bg-video">
-        
         <source src="background.mp4" type="video/mp4">
         Your browser does not support the video tag.
     </video>
 
     <div id="app-container" class="w-full max-w-4xl h-[95vh] max-h-[900px] rounded-2xl shadow-2xl flex p-4 md:p-6">
 
-        <!-- Welcome / Username Screen -->
+        <!-- Welcome Screen -->
         <div id="welcome-screen" class="flex flex-col items-center justify-center w-full text-center">
             <div class="bg-violet-500/20 text-violet-400 rounded-full p-4 mb-6">
                 <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none"
@@ -192,23 +208,19 @@
 
         <!-- Chat Screen -->
         <div id="chat-screen" class="hidden w-full flex h-full">
-            
+            <!-- Online Users Sidebar -->
             <aside class="w-1/4 max-w-xs border-r border-gray-700 pr-4 flex flex-col">
                 <h2 class="text-lg font-bold text-gray-200 mb-4 flex items-center">
-                    <span class="relative flex h-3 w-3 mr-3">
-                        <span
-                            class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-                        <span class="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
-                    </span>
+                    <span class="relative flex h-3 w-3 mr-3"><span
+                            class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span><span
+                            class="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span></span>
                     Online
                 </h2>
-                <div id="online-users" class="flex-1 overflow-y-auto pr-2">
-                   
-                </div>
+                <div id="online-users" class="flex-1 overflow-y-auto pr-2 space-y-3"></div>
             </aside>
 
             <!-- Main Chat Area -->
-            <div class="flex-1 flex flex-col pl-4">
+            <div class="flex-1 flex flex-col pl-4 relative">
                 <header class="border-b border-gray-700 pb-4 mb-4">
                     <div class="flex items-center justify-between">
                         <div class="flex items-center space-x-3">
@@ -230,15 +242,35 @@
                 </header>
 
                 <main id="chat-messages" class="flex-1 overflow-y-auto mb-2 p-3 rounded-lg bg-gray-900/50 space-y-4">
-                    
+                     
                 </main>
+
+                <button id="scroll-to-bottom"
+                    class="absolute bottom-24 right-4 bg-violet-600 text-white rounded-full p-2 shadow-lg hidden animate-bounce z-10">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="12" y1="5" x2="12" y2="19"></line>
+                        <polyline points="19 12 12 19 5 12"></polyline>
+                    </svg>
+                </button>
 
                 <div id="typing-indicator" class="h-6 text-sm text-gray-400 italic px-4"></div>
 
-                <footer class="mt-auto">
+                <footer class="mt-auto relative">
                     <form id="message-form" class="flex items-end space-x-2">
                         <textarea id="message-input" placeholder="Message... (Ctrl+Enter to send)" rows="1"
                             class="flex-1 px-4 py-2 border-transparent rounded-2xl dark-input resize-none overflow-y-hidden max-h-28"></textarea>
+                        <button type="button" id="emoji-button"
+                            class="p-2 text-gray-400 hover:text-violet-400 self-end mb-1">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <path d="M8 14s1.5 2 4 2 4-2 4-2"></path>
+                                <line x1="9" y1="9" x2="9.01" y2="9"></line>
+                                <line x1="15" y1="9" x2="15.01" y2="9"></line>
+                            </svg>
+                        </button>
                         <button type="submit" id="send-button"
                             class="text-white p-3 rounded-full focus:outline-none shadow-md dark-button hidden self-end">
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
@@ -249,13 +281,14 @@
                             </svg>
                         </button>
                     </form>
+                    <div id="emoji-picker-container" class="hidden"></div>
                 </footer>
             </div>
         </div>
     </div>
 
     <footer id="main-footer" class="mt-4 text-sm text-gray-500 text-center">
-        <p>Created with ❤️ by <a href="https://github.com/your-username" target="_blank"
+        <p>Created with ❤️ by <a href="https://github.com/Krish20024" target="_blank"
                 class="font-semibold text-violet-400 hover:underline">Krish</a></p>
     </footer>
 
@@ -265,12 +298,12 @@
     <!-- Firebase Libraries -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, collection, addDoc, query, onSnapshot, serverTimestamp, setLogLevel, doc, getDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, addDoc, query, onSnapshot, serverTimestamp, doc, getDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
         import { orderBy as firestoreOrderBy } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
         import { getDatabase, ref, onValue, set, onDisconnect } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-database.js";
+        import { createPicker } from 'https://cdn.jsdelivr.net/npm/picmo@latest/dist/index.js';
 
-        // --- Firebase Configuration ---
         const firebaseConfig = {
             apiKey: "AIzaSyAFtxg7p6UfV0_Cs2kADnAcZlVovy5eZKM",
             authDomain: "chat-application-cbd8b.firebaseapp.com",
@@ -280,7 +313,6 @@
             appId: "1:403898227611:web:0550f65a815664a8479f3e",
             measurementId: "G-63MC1570K2"
         };
-        // ---------------------------------------------------------
         const appId = firebaseConfig.appId || 'default-app-id';
 
         if (!firebaseConfig || !firebaseConfig.apiKey || firebaseConfig.apiKey === "YOUR_API_KEY") {
@@ -300,6 +332,7 @@
         let currentUser = null;
         let currentUsername = null;
         let typingTimeout;
+        let emojiPicker = null;
 
         const messagesCollectionPath = `artifacts/${appId}/public/data/messages`;
         const typingCollectionPath = `artifacts/${appId}/public/data/typing`;
@@ -313,11 +346,23 @@
         const messageForm = document.getElementById('message-form');
         const messageInput = document.getElementById('message-input');
         const sendButton = document.getElementById('send-button');
+        const emojiButton = document.getElementById('emoji-button');
+        const emojiPickerContainer = document.getElementById('emoji-picker-container');
         const chatMessages = document.getElementById('chat-messages');
         const errorMessage = document.getElementById('error-message');
         const onlineUsersContainer = document.getElementById('online-users');
         const typingIndicator = document.getElementById('typing-indicator');
         const notificationSound = document.getElementById('notification-sound');
+        const scrollToBottomBtn = document.getElementById('scroll-to-bottom');
+
+        const avatarColors = ['#8b5cf6', '#ec4899', '#f59e0b', '#10b981', '#3b82f6', '#ef4444'];
+
+        function getAvatar(username) {
+            const initials = username.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+            const charCodeSum = username.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+            const color = avatarColors[charCodeSum % avatarColors.length];
+            return { initials, color };
+        }
 
         async function login() {
             try {
@@ -346,7 +391,7 @@
             const q = query(messagesRef, firestoreOrderBy("timestamp"));
 
             onSnapshot(q, (snapshot) => {
-                const wasScrolledToBottom = chatMessages.scrollHeight - chatMessages.clientHeight <= chatMessages.scrollTop + 1;
+                const wasScrolledToBottom = chatMessages.scrollHeight - chatMessages.clientHeight <= chatMessages.scrollTop + 5;
 
                 snapshot.docChanges().forEach(change => {
                     if (change.type === "added") {
@@ -362,12 +407,12 @@
                     }
                 });
 
-                if (snapshot.docChanges().some(change => change.type === 'added') && document.hidden) {
+                if (snapshot.docChanges().some(change => change.type === 'added' && document.hidden)) {
                     notificationSound.play().catch(e => console.log("Playback prevented by browser."));
                 }
 
                 if (wasScrolledToBottom) {
-                    chatMessages.scrollTop = chatMessages.scrollHeight;
+                    chatMessages.scrollTo({ top: chatMessages.scrollHeight, behavior: 'smooth' });
                 }
             });
         }
@@ -379,11 +424,12 @@
             messageWrapper.setAttribute('data-message-id', id);
 
             const timestamp = message.timestamp ? message.timestamp.toDate() : new Date();
-
             const sanitizedText = message.text.replace(/</g, "&lt;").replace(/>/g, "&gt;");
             const formattedText = formatMessageText(sanitizedText, isMyMessage);
+            const { initials, color } = getAvatar(message.username || 'A');
 
             messageWrapper.innerHTML = `
+                ${!isMyMessage ? `<div class="avatar" style="background-color: ${color}">${initials}</div>` : ''}
                 <div class="flex flex-col message-bubble ${isMyMessage ? 'items-end' : 'items-start'}">
                     ${!isMyMessage ? `<div class="text-xs text-gray-400 ml-2 mb-1 font-medium">${message.username || 'Anonymous'}</div>` : ''}
                     <div class="relative max-w-xs md:max-w-md px-3 py-2 rounded-xl shadow-md ${isMyMessage ? 'bg-gradient-to-br from-violet-500 to-purple-600 text-white rounded-br-lg' : 'bg-gray-700 text-gray-200 rounded-bl-lg'}">
@@ -398,10 +444,7 @@
 
             const deleteBtn = messageWrapper.querySelector('.delete-btn');
             if (deleteBtn) {
-                deleteBtn.addEventListener('click', () => {
-                    const messageId = deleteBtn.getAttribute('data-id');
-                    deleteMessage(messageId);
-                });
+                deleteBtn.addEventListener('click', () => deleteMessage(deleteBtn.getAttribute('data-id')));
             }
             return messageWrapper;
         }
@@ -439,6 +482,7 @@
                 messageInput.style.height = 'auto';
                 sendButton.classList.add('hidden');
                 updateTypingStatus(false);
+                chatMessages.scrollTo({ top: chatMessages.scrollHeight, behavior: 'smooth' }); // Force scroll on send
             } catch (error) {
                 console.error("Error sending message: ", error);
             }
@@ -461,10 +505,14 @@
                 const users = snapshot.val() || {};
                 onlineUsersContainer.innerHTML = '';
                 Object.values(users).forEach(user => {
-                    const p = document.createElement('p');
-                    p.className = 'text-gray-300 py-1 text-sm truncate';
-                    p.textContent = user.username;
-                    onlineUsersContainer.appendChild(p);
+                    const { initials, color } = getAvatar(user.username);
+                    const userEl = document.createElement('div');
+                    userEl.className = 'flex items-center space-x-3';
+                    userEl.innerHTML = `
+                        <div class="avatar text-sm" style="background-color: ${color}">${initials}</div>
+                        <p class="text-gray-300 text-sm truncate">${user.username}</p>
+                    `;
+                    onlineUsersContainer.appendChild(userEl);
                 });
             });
         }
@@ -496,6 +544,18 @@
                 } else {
                     typingIndicator.textContent = `${typers.join(', ')} are typing...`;
                 }
+            });
+        }
+
+        function initializeEmojiPicker() {
+            emojiPicker = createPicker({
+                rootElement: emojiPickerContainer,
+                className: 'picmo-picker',
+                theme: 'dark'
+            });
+            emojiPicker.addEventListener('emoji:select', event => {
+                messageInput.value += event.emoji;
+                messageInput.dispatchEvent(new Event('input', { bubbles: true }));
             });
         }
 
@@ -542,6 +602,7 @@
         messageForm.addEventListener('submit', (e) => {
             e.preventDefault();
             sendMessage(messageInput.value);
+            if (emojiPicker) emojiPickerContainer.classList.add('hidden');
         });
 
         messageInput.addEventListener('input', () => {
@@ -559,6 +620,23 @@
                 e.preventDefault();
                 messageForm.dispatchEvent(new Event('submit'));
             }
+        });
+
+        chatMessages.addEventListener('scroll', () => {
+            if (chatMessages.scrollHeight - chatMessages.clientHeight > chatMessages.scrollTop + 150) {
+                scrollToBottomBtn.classList.remove('hidden');
+            } else {
+                scrollToBottomBtn.classList.add('hidden');
+            }
+        });
+
+        scrollToBottomBtn.addEventListener('click', () => {
+            chatMessages.scrollTo({ top: chatMessages.scrollHeight, behavior: 'smooth' });
+        });
+
+        emojiButton.addEventListener('click', () => {
+            if (!emojiPicker) initializeEmojiPicker();
+            emojiPickerContainer.classList.toggle('hidden');
         });
 
         login();
